@@ -37,7 +37,22 @@ automations:
       - action: explain-code-experts@v1 
         args:
           gt: 10 
+    # Triggered for PRs that lack an image file or link to an image in the PR description
+    if:
+      - {{ not (has.screenshot_link or has.image_uploaded) }}
+    run:
+      - action: add-label@v1
+        args:
+          label: 'no-screenshot'
+          color: '#FF000A'
+      - action: add-comment@v1
+        args:
+          comment: |
+            Be a life saver 🛟 by adding a screenshot of the changes you made.
 
+has:
+  screenshot_link: {{ pr.description | includes(regex=r/!\[.*\]\(.*(jpg|svg|png|gif|psd).*\)/) }}
+  image_uploaded: {{ pr.description | includes(regex=r/<img.*src.*(jpg|svg|png|gif|psd).*>/) }}
 
 # +----------------------------------------------------------------------------+
 # | Custom Expressions                                                         |
@@ -60,23 +75,3 @@ colors:
 
 manifest:
   version: 1.0
-
-automations: 
-  request_screenshot:
-    # Triggered for PRs that lack an image file or link to an image in the PR description
-    if:
-      - {{ not (has.screenshot_link or has.image_uploaded) }}
-    run:
-      - action: add-label@v1
-        args:
-          label: 'no-screenshot'
-          color: '#FF000A'
-      - action: add-comment@v1
-        args:
-          comment: |
-            Be a life saver 🛟 by adding a screenshot of the changes you made.
-
-has:
-  screenshot_link: {{ pr.description | includes(regex=r/!\[.*\]\(.*(jpg|svg|png|gif|psd).*\)/) }}
-  image_uploaded: {{ pr.description | includes(regex=r/<img.*src.*(jpg|svg|png|gif|psd).*>/) }}
-
