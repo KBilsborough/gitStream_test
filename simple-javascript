@@ -14,4 +14,3 @@ isPositive('1');
 
 isPositive(Number(1))
 //=> true
-
